@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Flat3\Lodata;
 
+use Flat3\Lodata\Annotation\Core\V1\OptionalParameter;
 use Flat3\Lodata\Attributes\LodataNamespace;
 use Flat3\Lodata\Attributes\LodataOperation;
 use Flat3\Lodata\Controller\Transaction;
@@ -411,31 +412,36 @@ class Operation implements ServiceInterface, ResourceInterface, IdentifierInterf
         foreach ($reflectionMethod->getParameters() as $parameter) {
             $type = $parameter->getType()->getName();
 
+            $newArgument = null;
             switch (true) {
                 case is_a($type, EntitySet::class, true):
-                    $arguments[] = new EntitySetArgument($this, $parameter);
+                    $newArgument = new EntitySetArgument($this, $parameter);
                     break;
 
                 case is_a($type, Transaction::class, true):
-                    $arguments[] = new TransactionArgument($this, $parameter);
+                    $newArgument = new TransactionArgument($this, $parameter);
                     break;
 
                 case is_a($type, Entity::class, true):
-                    $arguments[] = new EntityArgument($this, $parameter);
+                    $newArgument = new EntityArgument($this, $parameter);
                     break;
 
                 case $type === 'array' || is_a($type, Collection::class, true):
-                    $arguments[] = new CollectionArgument($this, $parameter);
+                    $newArgument = new CollectionArgument($this, $parameter);
                     break;
 
                 case is_a($type, Primitive::class, true):
-                    $arguments[] = new PrimitiveArgument($this, $parameter);
+                    $newArgument = new PrimitiveArgument($this, $parameter);
                     break;
 
                 default:
-                    $arguments[] = new ValueArgument($this, $parameter);
+                    $newArgument = new ValueArgument($this, $parameter);
                     break;
             }
+            if($parameter->isOptional()) {
+                $newArgument->addAnnotation(new OptionalParameter());
+            }
+            $arguments[] = $newArgument;
         }
 
         return $arguments;
