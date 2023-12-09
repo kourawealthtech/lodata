@@ -8,6 +8,7 @@ use Flat3\Lodata\DynamicProperty;
 use Flat3\Lodata\Interfaces\NameInterface;
 use Flat3\Lodata\Interfaces\TypeInterface;
 use Flat3\Lodata\Operation;
+use Flat3\Lodata\Traits\HasAnnotations;
 use Flat3\Lodata\Traits\HasName;
 use Flat3\Lodata\Type;
 use ReflectionParameter;
@@ -19,6 +20,7 @@ use ReflectionParameter;
 abstract class Argument implements NameInterface, TypeInterface
 {
     use HasName;
+    use HasAnnotations;
 
     /**
      * The operation attached to this argument

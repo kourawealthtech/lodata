@@ -290,6 +290,10 @@ class XML extends Metadata implements StreamInterface
                             'Nullable',
                             (new Boolean($argument->isNullable()))->toUrl()
                         );
+
+                        foreach ($argument->getAnnotations() as $annotation) {
+                            $annotation->appendXml($parameterElement);
+                        }
                     }
 
                     $returnType = $resource->getReturnType();
